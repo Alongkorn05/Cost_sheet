@@ -6,40 +6,52 @@ def convert(w):
     return records
 
 def super_ai(w):
-    lis=[]
-    for index,element in enumerate (w['data']):
-        green=0
-        yel=0
-        red=0
-        salefactor=(float(element["input_data"]["SaleFactors"]))
-        external=(float(element["input_data"]["External"]))
+    lis = []
+    results = []
+    for index, element in enumerate(w['data']):
+        green = 0
+        yel = 0
+        red = 0
+        salefactor = float(element["input_data"]["SaleFactors"])
+        external = float(element["input_data"]["External"])
 
+        if external < 0.30 and (salefactor > 1 or 1.00 <= salefactor <= 1.14):
+            green = 1
 
-        if (external<0.30 and (salefactor>1 or 1.00<=salefactor<=1.14) ):
-            green=1
-                
-            #2.(เงื่อนไขเหลือง) : External<30% หรือ SaleFactors = 0.99-0.90 & External>=30%-49% หรือ SaleFactors>=0.90
-        if ((external<0.30 or 0.90<=salefactor<=0.99) and (0.30<=external<=0.49 or salefactor>=0.90) ):
-            yel=1
-        
-        if(red+green+yel<2):
-            #(เงื่อนไขแดง) : SaleFactors <=0.89 หรือ External>=50% หรือ SF(AIl)
-            if (external>=0.50 or salefactor <=0.89):
-                red=1
-        if(red+green+yel>=2):
-            
-            print(f"Record{index}")
+        if (external < 0.30 or 0.90 <= salefactor <= 0.99) and (0.30 <= external <= 0.49 or salefactor >= 0.90):
+            yel = 1
+
+        if red + green + yel < 2:
+            if external >= 0.50 or salefactor <= 0.89:
+                red = 1
+
+        if red + green + yel >= 2:
+            print(f"Record {index}")
             result = 1
-            print("Pass : ",result," /Green = ",green,"/Yellow = ",yel,"/Red = ",red)
+            print("Pass : ", result, " /Green = ", green, "/Yellow = ", yel, "/Red = ", red)
             print("")
-            
-            
-        
         else:
             lis.append(w['data'][index])
             result = 0
-            print(f"Record{index}")
-            print("didn't Pass: ",result," /Green = ",green,"/Yellow = ",yel,"/Red = ",red)
+            print(f"Record {index}")
+            print("didn't Pass: ", result, " /Green = ", green, "/Yellow = ", yel, "/Red = ", red)
             print("")
-    print((lis))
-    return lis
+            if green == 1:
+                status = "Green"
+            elif yel == 1:
+                status = "Yellow"
+            elif red == 1:
+                status = "Red"
+            else:
+                status = "null"
+
+            record_dict = {
+                "id": lis[-1]["_id"],
+                "External": lis[-1]["input_data"]["External"],
+                "SaleFactors": lis[-1]["input_data"]["SaleFactors"],
+                "State": status
+            }
+
+            results.append(record_dict)
+
+    return results
